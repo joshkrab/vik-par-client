@@ -15,13 +15,21 @@
         <v-btn @click="getData" type="submit" block class="mt-2">Submit</v-btn>
       </v-form>
       <div class="out-block">{{ output }}</div>
+      <v-progress-linear
+        color="deep-purple-accent-4"
+        indeterminate
+        rounded
+        height="6"
+        :class="showLoader.join(' ')"
+      ></v-progress-linear>
     </v-sheet>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import exportFromJSON from "export-from-json";
+// import exportFromJSON from "export-from-json";
+import xlsx from "xlsx/dist/xlsx.full.min";
 
 export default {
   components: {},
@@ -30,34 +38,50 @@ export default {
       firstUrl: null,
       pageCount: null,
       output: "",
+      showLoader: ["hide"],
     };
   },
 
   methods: {
     async getData() {
-      this.output = '';
+      this.showLoader.push("show");
+      this.output = "";
       if (!this.firstUrl) {
         alert("Input url!");
+        this.showLoader = ["hide"];
         return;
       }
 
-      const { data } = await axios.post("http://localhost:8080/api/vikpar", {
-        url: this.firstUrl,
-        pageCount: this.pageCount || 1,
-      });
+      try {
+        const response = await axios.post("http://localhost:8080/api/vikpar", {
+          url: this.firstUrl,
+          pageCount: this.pageCount || 1,
+        });
 
-      data
-        ? (this.output = "Successfully")
-        : (this.output = "Something wrong...");
+        const data = response.data;
 
-      const fileName = "np-data";
-      const exportType = exportFromJSON.types.xls;
+        data
+          ? (this.output = "Successfully")
+          : (this.output = "Something wrong...");
 
-      if (data) {
-        console.log(data);
-        exportFromJSON({data, fileName, exportType });
+        if (data) {
+          // const fileName = "np-data";
+          // const exportType = exportFromJSON.types.xls;
+          // exportFromJSON({ data, fileName, exportType });
+
+          const XLSX = xlsx;
+          const workbook = XLSX.utils.book_new();
+          const worksheet = XLSX.utils.json_to_sheet(data);
+          XLSX.utils.book_append_sheet(workbook, worksheet, "data");
+          XLSX.writeFile(workbook, "data.xlsx");
+        }
+        this.showLoader = ["hide"];
+        return;
+      } catch (error) {
+        this.output = "Something wrong...";
+        this.showLoader = ["hide"];
+        return;
       }
-      return;
     },
   },
 };
@@ -68,5 +92,13 @@ export default {
   height: 40px;
   margin: 10px;
   text-align: center;
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
 }
 </style>
