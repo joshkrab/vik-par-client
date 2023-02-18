@@ -2,7 +2,9 @@
   <router-view />
 </template>
 
-<script setup></script>
+<script setup>
+// hello
+</script>
 
 <style>
 .wrapper {
