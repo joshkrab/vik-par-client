@@ -53,10 +53,13 @@ export default {
       }
 
       try {
-        const response = await axios.post("http://localhost:8080/api/vikpar", {
-          url: this.firstUrl,
-          pageCount: this.pageCount || 1,
-        });
+        const response = await axios.post(
+          "https://vikpar.herokuapp.com/api/vikpar",
+          {
+            url: this.firstUrl,
+            pageCount: this.pageCount || 1,
+          }
+        );
 
         const data = response.data;
 

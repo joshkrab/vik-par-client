@@ -1,15 +1,19 @@
 {
   "name": "vikpar",
+  "homepage": "https://joshkrab.github.io/vik-par-client/",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --fix --ignore-path .gitignore"
+    "lint": "eslint . --fix --ignore-path .gitignore",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@mdi/font": "7.0.96",
     "axios": "^1.3.3",
+    "gh-pages": "^5.0.0",
     "roboto-fontface": "*",
     "vue": "^3.2.38",
     "vue-router": "^4.0.0",
